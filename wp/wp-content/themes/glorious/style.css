@@ -1,0 +1,11 @@
+/*
+Theme Name:   Glorious
+Theme URI:    https://gloriouscontainerconversions.com
+Description:  The Glorious Container Conversions website. A custom theme built from the approved prototype; all records, settings and the quote form come from the GCC Core plugin.
+Author:       Fred Vuni
+Author URI:   https://fredvuni.netlify.app
+Version:      1.0.0
+Requires PHP: 8.1
+Text Domain:  gcc
+*/
+/* The real stylesheets are in assets/css/, enqueued from functions.php. */

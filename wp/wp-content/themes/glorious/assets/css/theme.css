@@ -1,0 +1,75 @@
+/* ==========================================================================
+   WordPress-specific additions on top of the prototype's three stylesheets:
+   menu markup, the form's server-side states, pagination, editor blocks.
+   ========================================================================== */
+
+/* wp_nav_menu wraps items in a <ul>; the prototype styled bare <a>s. */
+.nav-primary ul { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; }
+.nav-primary li, .nav-drawer li { list-style: none; margin: 0; padding: 0; }
+.nav-primary li::marker, .nav-drawer li::marker { content: ""; }
+.nav-drawer ul { position: relative; display: grid; gap: 4px; margin-top: 12px; counter-reset: nav; }
+.nav-drawer li a::before { counter-increment: nav; content: "0" counter(nav); font-family: var(--font-mono); font-size: .75rem; letter-spacing: .1em; color: var(--yellow); }
+
+/* Server-side form feedback (the prototype only had the client-side version). */
+.flash { margin-bottom: 28px; }
+.field.is-invalid input, .field.is-invalid select, .field.is-invalid textarea { border-bottom-color: var(--rust); box-shadow: inset 0 -2px 0 var(--rust); background: #fbf3ef; }
+.field .error { font-size: .85rem; color: var(--rust); }
+
+/* Pagination on the blog and Work pages */
+.pagination { display: flex; flex-wrap: wrap; gap: 6px; margin-top: clamp(40px, 5vw, 72px); font-family: var(--font-mono); font-size: .78rem; letter-spacing: .06em; }
+.pagination .page-numbers { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; height: 44px; padding: 0 12px; border: 1px solid var(--line-strong); color: var(--steel); }
+.pagination .page-numbers.current { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.pagination a.page-numbers:hover { border-color: var(--ink); color: var(--ink); }
+
+/* Category filter on the Work page as links (works without JavaScript) */
+.filters a.filter { text-decoration: none; }
+
+/* Block editor content inside .prose */
+.prose img { height: auto; }
+.prose figure.wp-block-image, .prose .wp-block-embed { margin: 2em 0; }
+.prose figcaption { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--slate); padding-top: 10px; }
+.prose blockquote { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.5rem, 2.4vw, 2rem); line-height: 1.2; margin: 2em 0; padding: 0 0 0 24px; border-left: 4px solid var(--yellow); }
+.prose blockquote p { margin: 0; }
+.prose ol { margin: 0 0 1.4em 1.4em; display: grid; gap: .5em; }
+.prose a { text-decoration: underline; text-decoration-color: var(--yellow); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+.prose a:hover { text-decoration-color: var(--ink); }
+.prose table { width: 100%; border-collapse: collapse; font-size: .95rem; margin: 1.5em 0; }
+.prose th, .prose td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.prose th { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--slate); }
+.prose .media { margin: 1.5em 0; }
+.alignwide, .alignfull { max-width: none; }
+.screen-reader-text { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Project page */
+.project-gallery { display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(12px, 1.5vw, 20px); }
+.project-gallery > :first-child { grid-column: 1 / 13; }
+.project-gallery > :nth-child(n+2) { grid-column: span 4; }
+.project-gallery .media { aspect-ratio: 4 / 3; }
+.project-gallery > :first-child .media { aspect-ratio: 16 / 9; }
+.project-side { display: grid; gap: 24px; align-content: start; }
+.project-side dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; padding-top: 18px; border-top: 1px solid var(--ink); }
+.project-side dt { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--slate); padding-top: 3px; }
+.project-side dd { margin: 0; }
+.project-side .features { display: grid; gap: 8px; }
+.project-side .features li { position: relative; padding-left: 18px; font-size: .95rem; }
+.project-side .features li::before { content: ""; position: absolute; left: 0; top: .62em; width: 9px; height: 2px; background: var(--teal); }
+.project-side .note { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; color: var(--slate); text-transform: uppercase; line-height: 1.6; border-left: 2px solid var(--teal); padding-left: 12px; }
+.project-layout { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: clamp(16px, 2.5vw, 40px); row-gap: 40px; align-items: start; }
+.project-layout .project-body { grid-column: 1 / 8; }
+.project-layout .project-side { grid-column: 9 / 13; position: sticky; top: calc(var(--header-h) + 24px); }
+
+/* Testimonials */
+.testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.5vw, 40px); }
+.testimonial { padding: 28px 26px 30px; background: var(--white); display: grid; gap: 18px; align-content: start; }
+.testimonial blockquote { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 1.4rem; line-height: 1.2; }
+.testimonial .who { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--slate); }
+.testimonial .who b { display: block; color: var(--ink); font-weight: 500; margin-bottom: 2px; }
+
+@media (max-width: 960px) {
+  .project-gallery > :nth-child(n+2) { grid-column: span 6; }
+  .project-layout .project-body, .project-layout .project-side { grid-column: 1 / 13; position: static; }
+  .testimonials { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .project-gallery > :nth-child(n+2) { grid-column: span 12; }
+}
