@@ -87,8 +87,24 @@ Shared hosting is fine: nothing here needs a queue, cron or a build step.
 
 ## Zips for uploading
 
-`./package.sh` writes `dist/glorious.zip` (theme) and `dist/gcc-core.zip`
-(plugin), each unpacking to a single folder as wp-admin expects. Upload the
-plugin first (Plugins → Add New → Upload) and activate it — that creates the
-pages, the menu and the content — then the theme (Appearance → Themes →
-Upload). `dist/` is not committed.
+`./package.sh` writes four zips into `dist/` (not committed):
+
+| Zip | What | Size |
+|---|---|---|
+| `gcc-core.zip` | The plugin | small |
+| `glorious.zip` | The theme without its photographs | small |
+| `glorious-images.zip` | The photographs alone | ~7 MB |
+| `glorious-full.zip` | Theme and photographs together | ~8 MB |
+
+Shared hosts often cap uploads at 2–8 MB, and wp-admin reports that as
+"The link you followed has expired". So the default route is:
+
+1. Plugins → Add New → Upload `gcc-core.zip`, activate (creates pages, menu, content).
+2. Appearance → Themes → Upload `glorious.zip`, activate.
+3. In the host's File Manager or by FTP, open
+   `wp-content/themes/glorious/assets/`, upload `glorious-images.zip` there
+   and extract it. The site shows empty photo frames until this is done.
+
+On a host whose limit is 16 MB or more, `glorious-full.zip` replaces steps 2
+and 3. To raise the limit: cPanel → MultiPHP INI Editor, or a `.user.ini` in
+the WordPress root with `upload_max_filesize = 32M` and `post_max_size = 32M`.

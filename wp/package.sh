@@ -1,26 +1,33 @@
 #!/usr/bin/env bash
-# Builds the two zips WordPress accepts on "Upload Theme" / "Upload Plugin":
-#   dist/glorious.zip        the theme
-#   dist/gcc-core.zip   the plugin
-# Each zip unpacks to a single folder of the right name, which is what
-# wp-admin expects. macOS junk (.DS_Store, __MACOSX) is left out.
+# Builds the zips WordPress accepts on "Upload Theme" / "Upload Plugin":
+#   dist/gcc-core.zip          the plugin (small)
+#   dist/glorious.zip          the theme WITHOUT its photographs (small, uploads anywhere)
+#   dist/glorious-images.zip   the photographs alone, for File Manager / FTP
+#   dist/glorious-full.zip     the theme with photographs, for hosts whose upload limit allows it
+# Each zip unpacks to a single folder of the right name. macOS junk is left out.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 mkdir -p "$HERE/dist"
-for kind in themes plugins; do
-  for dir in "$HERE/wp-content/$kind"/*/; do
-    name="$(basename "$dir")"
-    out="$HERE/dist/$name.zip"
-    rm -f "$out"
-    # No git history, editor files or macOS junk: a .git folder inside the
-    # theme once doubled the zip and pushed it past the host's upload limit.
-    (cd "$HERE/wp-content/$kind" && zip -qr "$out" "$name" -x '*.DS_Store' -x '__MACOSX/*' -x '*/.git/*' -x '*/.git' -x '*/.gitignore' -x '*/.idea/*' -x '*/.vscode/*' -x '*/node_modules/*')
-    echo "built dist/$name.zip ($(du -h "$out" | cut -f1))"
-  done
-done
-echo
-echo "If wp-admin says \"The link you followed has expired\" on upload, the zip is over the host's"
-echo "PHP upload limit (upload_max_filesize / post_max_size). Raise both to 16M in cPanel → MultiPHP INI"
-echo "Editor, or unzip the folder into wp-content/themes via File Manager or FTP instead."
-echo
-echo "Upload order: Plugins → Add New → Upload (gcc-core.zip) and activate, then Appearance → Themes → Upload (glorious.zip) and activate."
+X=(-x '*.DS_Store' -x '__MACOSX/*' -x '*/.git/*' -x '*/.git' -x '*/.gitignore' -x '*/.idea/*' -x '*/.vscode/*' -x '*/node_modules/*')
+
+rm -f "$HERE"/dist/*.zip
+(cd "$HERE/wp-content/plugins" && zip -qr "$HERE/dist/gcc-core.zip" gcc-core "${X[@]}")
+(cd "$HERE/wp-content/themes" && zip -qr "$HERE/dist/glorious.zip" glorious "${X[@]}" -x 'glorious/assets/images/*.webp')
+(cd "$HERE/wp-content/themes/glorious/assets" && zip -qr "$HERE/dist/glorious-images.zip" images -i '*.webp')
+(cd "$HERE/wp-content/themes" && zip -qr "$HERE/dist/glorious-full.zip" glorious "${X[@]}")
+for z in gcc-core glorious glorious-images glorious-full; do echo "built dist/$z.zip ($(du -h "$HERE/dist/$z.zip" | cut -f1))"; done
+
+cat <<'EOF'
+
+Upload order, on any host:
+  1. Plugins → Add New → Upload  gcc-core.zip   → Activate (creates pages, menu and content)
+  2. Appearance → Themes → Upload  glorious.zip  → Activate
+  3. Photos: in the host's File Manager (or FTP) open wp-content/themes/glorious/assets/,
+     upload glorious-images.zip there and extract it. It creates assets/images/ with every photo.
+     Until this step the site renders with empty photo frames.
+
+If the host's PHP upload limit is 16M or more, glorious-full.zip can replace steps 2 and 3.
+"The link you followed has expired" on upload means the zip is over that limit
+(upload_max_filesize / post_max_size). Raise both in cPanel → MultiPHP INI Editor, or add a
+.user.ini in the WordPress root with:  upload_max_filesize = 32M  and  post_max_size = 32M
+EOF
