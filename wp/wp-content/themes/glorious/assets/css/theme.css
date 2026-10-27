@@ -73,3 +73,11 @@
 @media (max-width: 640px) {
   .project-gallery > :nth-child(n+2) { grid-column: span 12; }
 }
+
+/* Hero caption plate never runs under the slider controls: it yields space to
+   them and truncates its label instead. */
+.hero-plate { max-width: calc(100% - 210px); z-index: 2; }
+.hero-plate [data-slide-label] { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.hero-nav { z-index: 4; background: var(--paper); padding-left: 8px; }
+@media (max-width: 1280px) { .hero-dots { display: none; } }
+@media (max-width: 640px) { .hero-plate { max-width: calc(100% - 110px); } }
