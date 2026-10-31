@@ -49,7 +49,10 @@ final class Redirects
 
     public static function maybeRedirect(): void
     {
-        if (is_admin()) {
+        // Only an address that would otherwise 404 is redirected: the old
+        // site's four articles still exist under their old slugs on a site
+        // that had them, and those must keep working as they are.
+        if (is_admin() || ! is_404()) {
             return;
         }
         $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH);

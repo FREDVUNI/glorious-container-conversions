@@ -4,7 +4,7 @@
  * Plugin Name: Glorious Container Conversions
  * Plugin URI: https://gloriouscontainerconversions.com
  * Description: Projects, services, team, the quote-request form and the GCC settings for the Glorious Container Conversions website. Required by the Glorious theme.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Fred Vuni
  * Author URI: https://fredvuni.netlify.app
  * Requires PHP: 8.1
@@ -17,7 +17,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('GCC_VERSION', '1.1.0');
+define('GCC_VERSION', '1.1.1');
 define('GCC_FILE', __FILE__);
 define('GCC_DIR', plugin_dir_path(__FILE__));
 define('GCC_URL', plugin_dir_url(__FILE__));

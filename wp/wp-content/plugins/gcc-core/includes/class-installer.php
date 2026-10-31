@@ -34,6 +34,7 @@ final class Installer
         self::pages();
         self::applyTemplates();
         self::migrateFromAvada();
+        self::fixMenu();
         flush_rewrite_rules();
         update_option('gcc_version', GCC_VERSION);
     }
@@ -59,6 +60,8 @@ final class Installer
             wp_update_post(['ID' => $about, 'post_content' => self::ABOUT_BODY]);
         }
 
+        self::fixMenu();
+
         // Any other published page built with the builder is retired; the
         // redirects in Redirects::MAP carry its visitors to the new page.
         $ours = array_filter(array_map(static fn (string $r): int => (int) get_option('gcc_page_' . $r), array_keys(self::PAGES)));
@@ -68,15 +71,33 @@ final class Installer
             }
         }
 
-        // The menu: if what is in the primary slot links to old pages, build ours and assign it.
+    }
+
+    /**
+     * If what sits in the primary slot is the old site's menu (links or
+     * titles for Articles / Get Quote, or no link to our Blog or Contact),
+     * build ours and assign it. Runs once per plugin version, so a menu the
+     * client has since edited to their liking is checked again only after
+     * an upload, and only replaced if it still carries the old items.
+     */
+    public static function fixMenu(): void
+    {
         $locations = (array) get_theme_mod('nav_menu_locations');
         $current = (int) ($locations['primary'] ?? 0);
         $stale = $current === 0;
+        $hasBlog = $hasContact = false;
+        $blog = (int) get_option('gcc_page_blog');
+        $contact = (int) get_option('gcc_page_contact');
         if ($current) {
-            foreach (wp_get_nav_menu_items($current) ?: [] as $item) {
-                if (preg_match('#/(construction-articles|get-quote)/?$#', (string) $item->url)) {
+            foreach (wp_get_nav_menu_items($current, ['post_status' => 'any']) ?: [] as $item) {
+                if (preg_match('#/(construction-articles|get-quote)/?$#', (string) $item->url) || preg_match('/^(articles|get quote)$/i', trim((string) $item->title))) {
                     $stale = true;
                 }
+                $hasBlog = $hasBlog || (int) $item->object_id === $blog;
+                $hasContact = $hasContact || (int) $item->object_id === $contact;
+            }
+            if (! $hasBlog || ! $hasContact) {
+                $stale = true;
             }
         }
         if ($stale) {
