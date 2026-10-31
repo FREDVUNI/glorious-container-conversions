@@ -69,7 +69,7 @@ final class Seo
         if (is_singular(PostTypes::PROJECT) && function_exists('gcc_project_images')) {
             $first = gcc_project_images(get_queried_object_id())[0] ?? null;
             if ($first) {
-                $url = is_int($first['src']) ? wp_get_attachment_image_url($first['src'], 'large') : get_theme_file_uri('assets/images/' . $first['src'] . '-1600.webp');
+                $url = is_int($first['src']) ? wp_get_attachment_image_url($first['src'], 'large') : gcc_photo_url($first['src'], 1600);
                 if ($url) {
                     return $url;
                 }
@@ -80,7 +80,7 @@ final class Seo
             return $custom;
         }
 
-        return get_theme_file_uri('assets/images/hero-call-centre-1600.webp');
+        return gcc_photo_url('hero-call-centre', 1600) ?: get_theme_file_uri('assets/images/logo.png');
     }
 
     public static function robots(string $output, bool $public): string

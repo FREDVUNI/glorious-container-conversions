@@ -35,8 +35,33 @@ final class Installer
         self::applyTemplates();
         self::migrateFromAvada();
         self::fixMenu();
+        self::keepPhotos();
         flush_rewrite_rules();
         update_option('gcc_version', GCC_VERSION);
+    }
+
+    /**
+     * Copy the theme's bundled photos into wp-content/uploads/gcc-photos/
+     * the first time they are seen there. Replacing the theme from wp-admin
+     * deletes its folder, photos included; the uploads copy outlives that.
+     */
+    public static function keepPhotos(): void
+    {
+        $src = get_theme_file_path('assets/images');
+        $up = wp_upload_dir();
+        $dst = trailingslashit($up['basedir']) . 'gcc-photos';
+        if (! is_dir($src) || ! file_exists($src . '/hospital-02-800.webp')) {
+            return;
+        }
+        if (! is_dir($dst) && ! wp_mkdir_p($dst)) {
+            return;
+        }
+        foreach (glob($src . '/*.webp') ?: [] as $file) {
+            $to = $dst . '/' . basename($file);
+            if (! file_exists($to)) {
+                copy($file, $to);
+            }
+        }
     }
 
     /**
@@ -155,6 +180,7 @@ final class Installer
     {
         PostTypes::register();
         self::pages();
+        self::keepPhotos();
 
         update_option('show_on_front', 'page');
         update_option('page_on_front', (int) get_option('gcc_page_home'));

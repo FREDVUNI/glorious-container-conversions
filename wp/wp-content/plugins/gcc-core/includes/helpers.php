@@ -10,6 +10,47 @@
  */
 declare(strict_types=1);
 
+/**
+ * Where the bundled photographs live. First choice is
+ * wp-content/uploads/gcc-photos/, which survives a theme or plugin being
+ * replaced from wp-admin (that deletes the old folder, photos and all);
+ * second is the theme's own assets/images/. Returns [path, url] or null.
+ *
+ * @return array{0:string,1:string}|null
+ */
+if (! function_exists('gcc_photo_dir')) {
+    function gcc_photo_dir(): ?array
+    {
+        static $dir = false;
+        if ($dir !== false) {
+            return $dir;
+        }
+        $up = wp_upload_dir();
+        $a = [trailingslashit($up['basedir']) . 'gcc-photos', trailingslashit($up['baseurl']) . 'gcc-photos'];
+        $b = [get_theme_file_path('assets/images'), get_theme_file_uri('assets/images')];
+        foreach ([$a, $b] as $cand) {
+            if (file_exists($cand[0] . '/hospital-02-800.webp')) {
+                return $dir = $cand;
+            }
+        }
+
+        return $dir = null;
+    }
+}
+
+/** A bundled photo's URL at one of its widths, or '' when the photos are missing. */
+if (! function_exists('gcc_photo_url')) {
+    function gcc_photo_url(string $name, int $width = 800): string
+    {
+        $d = gcc_photo_dir();
+        if ($d === null || ! file_exists($d[0] . '/' . $name . '-' . $width . '.webp')) {
+            return '';
+        }
+
+        return $d[1] . '/' . $name . '-' . $width . '.webp';
+    }
+}
+
 if (! function_exists('gcc_setting')) {
     function gcc_setting(string $key, string $default = ''): string
     {

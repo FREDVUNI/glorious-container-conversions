@@ -24,6 +24,18 @@ final class Admin
         add_action('restrict_manage_posts', [self::class, 'exportButton']);
         add_action('pre_get_posts', [self::class, 'applyStatusFilter']);
         add_action('admin_notices', [self::class, 'settingsSavedNotice']);
+        add_action('admin_notices', [self::class, 'photosNotice']);
+        add_action('after_switch_theme', [Installer::class, 'keepPhotos']);
+    }
+
+    /** The site's photographs are missing from both places they can live. */
+    public static function photosNotice(): void
+    {
+        if (! current_user_can('manage_options') || (function_exists('gcc_photo_dir') && gcc_photo_dir() !== null)) {
+            return;
+        }
+        $up = wp_upload_dir();
+        echo '<div class="notice notice-error"><p><strong>GCC:</strong> the site\'s photographs are missing, so pages show empty frames. In the host\'s File Manager open <code>' . esc_html(trailingslashit($up['basedir'])) . '</code>, upload <code>glorious-images.zip</code> there and extract it; it creates the <code>gcc-photos</code> folder. That folder is kept when the theme or plugin is replaced.</p></div>';
     }
 
     public static function menu(): void
@@ -144,7 +156,7 @@ final class Admin
             echo '</select></div>';
         } elseif ($f['type'] === 'image') {
             $bundled = Settings::BUNDLED[$key] ?? '';
-            self::imageField($key, $stored, $bundled !== '' ? get_theme_file_uri('assets/images/' . $bundled . '-800.webp') : '');
+            self::imageField($key, $stored, $bundled !== '' ? gcc_photo_url($bundled, 800) : '');
         } elseif ($f['type'] === 'textarea') {
             echo '<textarea id="gcc_' . esc_attr($key) . '" name="' . $name . '" rows="' . (substr_count($f['default'], "\n") > 3 ? 8 : 3) . '" placeholder="' . esc_attr($placeholder) . '">' . esc_textarea($value) . '</textarea>';
         } else {

@@ -38,11 +38,12 @@ final class PostTypes
         add_shortcode('gcc_image', static function (array $atts): string {
             $a = shortcode_atts(['name' => '', 'alt' => '', 'caption' => ''], $atts);
             $name = sanitize_file_name((string) $a['name']);
-            if ($name === '' || ! file_exists(get_theme_file_path('assets/images/' . $name . '-800.webp'))) {
+            $small = $name !== '' ? gcc_photo_url($name, 800) : '';
+            if ($small === '') {
                 return '';
             }
-            $base = get_theme_file_uri('assets/images/' . $name);
-            $img = '<div class="media ratio-3-2"><img src="' . esc_url($base . '-800.webp') . '" srcset="' . esc_url($base . '-800.webp') . ' 800w, ' . esc_url($base . '-1600.webp') . ' 1600w" sizes="(max-width: 960px) 100vw, 60vw" alt="' . esc_attr((string) $a['alt']) . '" loading="lazy" decoding="async"></div>';
+            $large = gcc_photo_url($name, 1600) ?: $small;
+            $img = '<div class="media ratio-3-2"><img src="' . esc_url($small) . '" srcset="' . esc_url($small) . ' 800w, ' . esc_url($large) . ' 1600w" sizes="(max-width: 960px) 100vw, 60vw" alt="' . esc_attr((string) $a['alt']) . '" loading="lazy" decoding="async"></div>';
 
             return $a['caption'] !== '' ? '<figure class="wide">' . $img . '<figcaption class="caption"><span>' . esc_html((string) $a['caption']) . '</span></figcaption></figure>' : $img;
         });

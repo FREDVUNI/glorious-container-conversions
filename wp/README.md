@@ -119,9 +119,15 @@ Shared hosts often cap uploads at 2–8 MB, and wp-admin reports that as
 
 1. Plugins → Add New → Upload `gcc-core.zip`, activate (creates pages, menu, content).
 2. Appearance → Themes → Upload `glorious.zip`, activate.
-3. In the host's File Manager or by FTP, open
-   `wp-content/themes/glorious/assets/`, upload `glorious-images.zip` there
-   and extract it. The site shows empty photo frames until this is done.
+3. In the host's File Manager or by FTP, open `wp-content/uploads/`, upload
+   `glorious-images.zip` there and extract it. It creates
+   `uploads/gcc-photos/`. The site shows empty photo frames (and wp-admin a
+   red notice) until this is done.
+
+Keep the photos in `uploads/gcc-photos/`, not inside the theme: replacing a
+theme or plugin from wp-admin deletes its old folder, photos and all. The
+plugin copies any photos it finds in the theme into `uploads/gcc-photos/` on
+its first run, and every template reads from there first.
 
 On a host whose limit is 16 MB or more, `glorious-full.zip` replaces steps 2
 and 3. To raise the limit: cPanel → MultiPHP INI Editor, or a `.user.ini` in

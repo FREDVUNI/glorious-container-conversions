@@ -143,6 +143,12 @@ if (! function_exists('gcc_setting')) {
 /** A bundled image's URL at one of the two widths. */
 function gcc_img(string $name, int $width = 800): string
 {
+    if (function_exists('gcc_photo_url')) {
+        $u = gcc_photo_url($name, $width);
+
+        return $u !== '' ? esc_url($u) : ($width === 1600 ? gcc_img($name, 800) : '');
+    }
+
     return esc_url(get_theme_file_uri('assets/images/' . $name . '-' . $width . '.webp'));
 }
 
@@ -165,7 +171,7 @@ function gcc_image(int|string $src, string $alt = '', string $sizes = '(max-widt
 
         return '<img src="' . esc_url($full[0]) . '" srcset="' . $srcset . '" sizes="' . esc_attr($sizes) . '" alt="' . esc_attr($alt) . '" width="' . (int) $full[1] . '" height="' . (int) $full[2] . '"' . $loading . '>';
     }
-    if ($src === '' || ! file_exists(get_theme_file_path('assets/images/' . $src . '-800.webp'))) {
+    if ($src === '' || gcc_img($src, 800) === '') {
         return '';
     }
 

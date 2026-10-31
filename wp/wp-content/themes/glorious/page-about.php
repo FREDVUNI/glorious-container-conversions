@@ -63,7 +63,7 @@ get_template_part('template-parts/page-hero', null, ['title' => get_the_title(),
     <div class="team">
       <?php foreach ($team as $i => $m) : $src = has_post_thumbnail($m->ID) ? (int) get_post_thumbnail_id($m->ID) : gcc_meta($m->ID, 'bundled'); ?>
       <div class="member" data-reveal="up"<?php echo $i ? ' data-delay="' . ($i * 100) . '"' : ''; ?>>
-        <div class="media"><?php echo is_int($src) ? gcc_image($src, 'Portrait of ' . $m->post_title, '(max-width: 960px) 50vw, 33vw') : '<img src="' . esc_url(get_theme_file_uri('assets/images/' . $src . '-400.webp')) . '" alt="Portrait of ' . esc_attr($m->post_title) . '" loading="lazy" width="400" height="400">'; ?></div>
+        <div class="media"><?php echo is_int($src) ? gcc_image($src, 'Portrait of ' . $m->post_title, '(max-width: 960px) 50vw, 33vw') : '<img src="' . (gcc_img($src, 400) ?: gcc_img($src, 800)) . '" alt="Portrait of ' . esc_attr($m->post_title) . '" loading="lazy" width="400" height="400">'; ?></div>
         <div class="name"><h3><?php echo esc_html($m->post_title); ?></h3><span class="role"><?php echo esc_html(gcc_meta($m->ID, 'role')); ?></span></div>
         <?php if (gcc_meta($m->ID, 'quote') !== '') : ?><blockquote><?php echo esc_html(gcc_meta($m->ID, 'quote')); ?></blockquote><?php endif; ?>
       </div>

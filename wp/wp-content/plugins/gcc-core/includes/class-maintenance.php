@@ -29,7 +29,7 @@ final class Maintenance
         header('Retry-After: 3600');
         nocache_headers();
         $logo = Settings::get('logo') !== '' ? Settings::get('logo') : get_theme_file_uri('assets/images/logo.png');
-        $bg = get_theme_file_uri('assets/images/hospital-02-1600.webp');
+        $bg = gcc_photo_url('hospital-02', 1600);
         $name = Settings::get('company_name');
         $phone = Settings::get('phone');
         $email = Settings::get('email');
