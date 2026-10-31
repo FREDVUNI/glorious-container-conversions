@@ -166,6 +166,11 @@ function gcc_image(int|string $src, string $alt = '', string $sizes = '(max-widt
         if (! $full) {
             return '';
         }
+        $scheme = is_ssl() ? 'https' : 'http';
+        $full[0] = set_url_scheme($full[0], $scheme);
+        if ($small) {
+            $small[0] = set_url_scheme($small[0], $scheme);
+        }
         $alt = $alt !== '' ? $alt : (string) get_post_meta($src, '_wp_attachment_image_alt', true);
         $srcset = ($small ? esc_url($small[0]) . ' 800w, ' : '') . esc_url($full[0]) . ' 1600w';
 

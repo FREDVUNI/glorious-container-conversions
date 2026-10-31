@@ -25,9 +25,13 @@ if (! function_exists('gcc_photo_dir')) {
         if ($dir !== false) {
             return $dir;
         }
+        // Same scheme as the page: on a site whose WordPress Address is still
+        // http:// from before the certificate, an http photo on an https page
+        // is mixed content and Safari and Firefox refuse to show it.
+        $scheme = is_ssl() ? 'https' : 'http';
         $up = wp_upload_dir();
-        $a = [trailingslashit($up['basedir']) . 'gcc-photos', trailingslashit($up['baseurl']) . 'gcc-photos'];
-        $b = [get_theme_file_path('assets/images'), get_theme_file_uri('assets/images')];
+        $a = [trailingslashit($up['basedir']) . 'gcc-photos', set_url_scheme(trailingslashit($up['baseurl']) . 'gcc-photos', $scheme)];
+        $b = [get_theme_file_path('assets/images'), set_url_scheme(get_theme_file_uri('assets/images'), $scheme)];
         foreach ([$a, $b] as $cand) {
             if (file_exists($cand[0] . '/hospital-02-800.webp')) {
                 return $dir = $cand;

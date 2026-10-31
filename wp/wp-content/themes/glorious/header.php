@@ -25,7 +25,7 @@
 
 <?php
 $phone = gcc_setting('phone');
-$logo = gcc_setting('logo') !== '' ? gcc_setting('logo') : get_theme_file_uri('assets/images/logo.png');
+$logo = set_url_scheme(gcc_setting('logo') !== '' ? gcc_setting('logo') : get_theme_file_uri('assets/images/logo.png'), is_ssl() ? 'https' : 'http');
 $menu_fallback = static function (string $class): void {
     echo '<ul class="' . esc_attr($class) . '">';
     $i = 0;
