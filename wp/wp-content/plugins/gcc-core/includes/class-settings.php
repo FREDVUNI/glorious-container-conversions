@@ -204,6 +204,9 @@ final class Settings
             'Unit sizes' => [
                 'sizes_intro' => ['label' => 'Intro', 'type' => 'textarea', 'default' => 'ISO shipping container dimensions. Internal figures are approximate and reduce once walls are insulated and lined.'],
             ],
+            'Redirects' => [
+                'redirects' => ['label' => 'Extra redirects', 'type' => 'textarea', 'default' => '', 'hint' => 'One per line, as "/old-page/ -> /new-page/". The old site\'s addresses (articles, portfolio items, get-quote) are already redirected.'],
+            ],
             'Spam protection' => [
                 'recaptcha_site' => ['label' => 'reCAPTCHA site key', 'type' => 'text', 'default' => '', 'hint' => 'reCAPTCHA v2 "I\'m not a robot", from google.com/recaptcha. Both keys must be filled in before the check turns on.'],
                 'recaptcha_secret' => ['label' => 'reCAPTCHA secret key', 'type' => 'password', 'default' => '', 'secret' => true, 'hint' => 'Never shown again once saved. Leave blank to keep the current one.'],

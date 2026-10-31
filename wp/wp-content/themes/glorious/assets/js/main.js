@@ -215,6 +215,10 @@
     start();
   }
 
+  /* ---------- Chat widgets: keep back-to-top clear of them ----------- */
+  const chatCheck = () => { if (document.querySelector('.chaty-widget, .chaty, #chaty-widget, .joinchat, .wa-chat-box')) document.body.classList.add('has-chat-widget'); };
+  chatCheck(); window.addEventListener('load', chatCheck); setTimeout(chatCheck, 2500);
+
   /* ---------- Footer year -------------------------------------------- */
   document.querySelectorAll('[data-year]').forEach((el) => { el.textContent = new Date().getFullYear(); });
 })();

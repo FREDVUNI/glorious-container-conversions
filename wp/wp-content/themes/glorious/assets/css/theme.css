@@ -81,3 +81,8 @@
 .hero-nav { z-index: 4; background: var(--paper); padding-left: 8px; }
 @media (max-width: 1280px) { .hero-dots { display: none; } }
 @media (max-width: 640px) { .hero-plate { max-width: calc(100% - 110px); } }
+
+/* A chat bubble from a plugin (Chaty, WhatsApp widgets) sits bottom-right;
+   the back-to-top button moves above it rather than under it. */
+body:has(.chaty-widget, .chaty, #chaty-widget, .joinchat, .wa-chat-box) .to-top { bottom: 104px; }
+body.has-chat-widget .to-top { bottom: 104px; }

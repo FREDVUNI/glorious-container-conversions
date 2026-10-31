@@ -79,6 +79,24 @@ its gallery, or a service a featured image, or a setting an image, the
 bundled one is ignored. The Unsplash stock photos are listed in the
 prototype's README and should be replaced with company photography.
 
+## Going live on top of the old Avada site
+
+The plugin expects this and tidies up on its first run after upload (and
+again whenever its version changes): the Avada "Primary" menu is replaced
+with ours, an About page full of builder shortcodes gets the real copy, old
+builder pages (Articles, Get Quote, portfolio items) are set to draft, and
+every old address is redirected to its new page. The theme also drops
+Avada's Fusion stylesheet if that plugin is still active.
+
+Still do by hand, in wp-admin:
+
+1. Plugins: deactivate and delete **Avada Core**, **Avada Builder** and the
+   old theme (**Avada**). They are no longer used and only slow the site.
+2. If the **Chaty** chat bubble stays, nothing to do: the back-to-top button
+   moves above it. Switch Chaty off if the footer's WhatsApp link is enough.
+3. Settings → Permalinks → Save (once), so the redirects and the Work archive
+   take effect.
+
 ## Deploying
 
 Copy `wp-content/themes/glorious` and `wp-content/plugins/gcc-core` into the

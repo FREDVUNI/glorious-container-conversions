@@ -33,8 +33,55 @@ final class Installer
         }
         self::pages();
         self::applyTemplates();
+        self::migrateFromAvada();
         flush_rewrite_rules();
         update_option('gcc_version', GCC_VERSION);
+    }
+
+    /**
+     * The site went live on top of the old Avada install, so some of what
+     * activation found was the old site's: a "Primary" menu pointing at
+     * Articles and Get Quote, an About page full of builder shortcodes, and
+     * old pages still published. Put each right, once; anything an editor has
+     * since changed is left alone.
+     */
+    public static function migrateFromAvada(): void
+    {
+        if (get_option('gcc_avada_migrated')) {
+            return;
+        }
+        update_option('gcc_avada_migrated', 1);
+
+        // The About page: builder markup becomes our copy.
+        $about = (int) get_option('gcc_page_about');
+        $body = $about ? (string) get_post_field('post_content', $about) : '';
+        if ($about && (str_contains($body, '[fusion_') || str_contains($body, 'fusion-builder'))) {
+            wp_update_post(['ID' => $about, 'post_content' => self::ABOUT_BODY]);
+        }
+
+        // Any other published page built with the builder is retired; the
+        // redirects in Redirects::MAP carry its visitors to the new page.
+        $ours = array_filter(array_map(static fn (string $r): int => (int) get_option('gcc_page_' . $r), array_keys(self::PAGES)));
+        foreach (get_posts(['post_type' => 'page', 'post_status' => 'publish', 'numberposts' => -1, 'exclude' => $ours]) as $page) {
+            if (str_contains($page->post_content, '[fusion_') || get_page_template_slug($page->ID) === '100-width.php') {
+                wp_update_post(['ID' => $page->ID, 'post_status' => 'draft']);
+            }
+        }
+
+        // The menu: if what is in the primary slot links to old pages, build ours and assign it.
+        $locations = (array) get_theme_mod('nav_menu_locations');
+        $current = (int) ($locations['primary'] ?? 0);
+        $stale = $current === 0;
+        if ($current) {
+            foreach (wp_get_nav_menu_items($current) ?: [] as $item) {
+                if (preg_match('#/(construction-articles|get-quote)/?$#', (string) $item->url)) {
+                    $stale = true;
+                }
+            }
+        }
+        if ($stale) {
+            self::menu('Glorious');
+        }
     }
 
     /** Create any page from the list that does not exist yet. Safe to repeat. */
@@ -134,13 +181,21 @@ final class Installer
         update_option('thumbnail_crop', 1);
     }
 
-    private static function menu(): void
+    private static function menu(string $name = 'Primary'): void
     {
-        if (wp_get_nav_menu_object('Primary')) {
+        $existing = wp_get_nav_menu_object($name);
+        if ($existing && $name === 'Primary') {
             return;
         }
-        $menu = wp_create_nav_menu('Primary');
+        $menu = $existing ? (int) $existing->term_id : wp_create_nav_menu($name);
         if (is_wp_error($menu)) {
+            return;
+        }
+        if ($existing && wp_get_nav_menu_items($menu)) {
+            $locations = (array) get_theme_mod('nav_menu_locations');
+            $locations['primary'] = $menu;
+            set_theme_mod('nav_menu_locations', $locations);
+
             return;
         }
         $add = static function (array $item) use ($menu): void {

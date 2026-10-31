@@ -40,6 +40,28 @@ add_action('wp_enqueue_scripts', static function (): void {
     }
 });
 
+/**
+ * Avada's Fusion Builder plugin, if still active from the old site, prints
+ * its own stylesheet on every page and fights the theme. Drop it; the
+ * shortcodes it renders are on pages the installer has retired.
+ */
+add_action('wp_print_styles', static function (): void {
+    global $wp_styles;
+    foreach ($wp_styles->queue as $handle) {
+        if (str_contains($handle, 'fusion') || str_contains($handle, 'avada')) {
+            wp_dequeue_style($handle);
+        }
+    }
+}, 100);
+add_action('wp_print_scripts', static function (): void {
+    global $wp_scripts;
+    foreach ($wp_scripts->queue as $handle) {
+        if (str_contains($handle, 'fusion') || str_contains($handle, 'avada')) {
+            wp_dequeue_script($handle);
+        }
+    }
+}, 100);
+
 /** The no-js class the stylesheets key off, removed by main.js. */
 add_filter('language_attributes', static fn (string $out): string => $out . ' class="no-js"');
 

@@ -87,6 +87,7 @@ final class Admin
         'Hero figures' => ['dashicons-chart-bar', 'The four numbers under the hero. Pick what each one counts and it stays right as records are added; "typed by hand" is for numbers the site does not hold.'],
         'Process' => ['dashicons-randomize', 'The four steps from enquiry to keys, on the home page.'],
         'Unit sizes' => ['dashicons-editor-expand', 'The three standard container sizes at the foot of the Services page.'],
+        'Redirects' => ['dashicons-randomize', 'Send old addresses to their new pages so no link ever breaks.'],
         'Spam protection' => ['dashicons-shield', 'Google reCAPTCHA on the quote form.'],
     ];
 
